@@ -33,7 +33,7 @@ def showTasks(username):
     con = sql.connect(user=confUser, password=confPwd, database=confDB, host=confHost)
     try:
         cur = con.cursor()
-        sql_query = "select id, todo from task where username = %s order by todo asc;"
+        sql_query = "select id, todo, urgent from task where username = %s order by todo asc;"
         cur.execute(sql_query, (username,))
         rows = cur.fetchall()
         cur.close()
@@ -96,6 +96,7 @@ def removeAllTasks(arg):
     print("Deleted ALL tasks containing " + arg)
 
 if __name__ == '__main__':
+
     print(showTasks("ale"))
     #removeAllTasks("task")
     #task2 = "task di prova 2"

@@ -1,6 +1,6 @@
 
 import db_operator as myDB
-from flask import Flask, redirect, url_for, render_template, session, request
+from flask import Flask, redirect, url_for, render_template, session, request, jsonify
 
 import logging
 
@@ -74,6 +74,21 @@ def addTask():
 def logout():
     del (session['username'])
     return redirect(url_for('index'))
+
+
+
+# restAPI section
+
+@app.route('/API/tasklist')
+def APItasklist():
+    username = session.get('username', '')
+    if username == '':
+        username = 'default'
+    tasks = myDB.showTasks(username)
+    if tasks == None:
+        return render_template("loginerror.html")
+    tasks = [{'id':task[0], 'todo':task[1], 'urgent':task[2]} for task in tasks]
+    return jsonify(tasks)
 
 if __name__ == '__main__':
     app.run()
