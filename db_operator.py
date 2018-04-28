@@ -37,6 +37,7 @@ def showTasks(username):
         cur.execute(sql_query, (username,))
         rows = cur.fetchall()
         cur.close()
+        con.close()
     except sql.DataError as DataErr:
         print("errore di creazione table " + DataErr.args[0])
     except sql.DatabaseError as DBerror:
@@ -48,7 +49,25 @@ def showTasks(username):
     #rows = [i[0] for i in rows]
     return rows
 
+def getTaskContent(id):
+    con = sql.connect(user=confUser, password=confPwd, database=confDB, host=confHost)
+    try:
+        cur = con.cursor()
+        sql_query = "select id, todo, urgent from task where id = %s;"
+        cur.execute(sql_query, (id,))
+        row = cur.fetchone()
+        cur.close()
+        con.close()
+    except sql.DataError as DataErr:
+        print("errore di creazione table " + DataErr.args[0])
+    except sql.DatabaseError as DBerror:
+        print("errore nell'apertura del db " + DBerror.args[0])
+        sys.exit(1)
 
+    if row == None:
+        return ""
+    # rows = [i[0] for i in rows]
+    return row
 
 def newTask(todo, username):
     # msg = ' '.join(arg)
@@ -67,6 +86,21 @@ def newTask(todo, username):
     else:
         print("empty task...")
         return ""
+
+def updateTask(TaskID, todo, urgent):
+    if (todo != ""):
+        con = sql.connect(user=confUser, password=confPwd, database=confDB, host=confHost)
+        cur = con.cursor()
+        sql_query = "UPDATE task SET todo = %s, urgent = %s WHERE id = %s"
+        ret = cur.execute(sql_query, (todo, urgent, TaskID))
+        con.commit()
+        cur.close()
+        con.close()
+        return ret
+
+    else:
+        print("empty task...")
+        return [{'id':'', 'todo':'', 'urgent':''}]
 
 
 def removeTask(task_id, username):

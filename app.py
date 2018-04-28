@@ -101,6 +101,43 @@ def APIaddTask():
     ret = myDB.newTask(newTask['todo'], username)
     return jsonify([{'todo':ret}])
 
+@app.route('/API/tasklist/<id>', methods=['GET'])
+def APIgetTaskContent(id):
+    username = session.get('username', '')
+    if username == '':
+        username = 'default'
+        session['username']=username
+    task = myDB.getTaskContent(id)
+    if task=='':
+        return jsonify([{'id':'', 'todo':'', 'urgent':''}])
+    task = [{'id':task[0], 'todo':task[1], 'urgent':task[2]}]
+    return jsonify(task)
+
+@app.route('/API/tasklist/<id>/update', methods=['POST'])
+def APIupdateTaskByID(id):
+    username = session.get('username', '')
+    if username == '':
+        username = 'default'
+        session['username']=username
+    updatedTask = request.json
+    TaskID = updatedTask.get('id', '')
+    todo = updatedTask.get('todo', '')
+    urgent = updatedTask.get('urgent', '')
+    ret = myDB.updateTask(TaskID, todo, urgent)
+    if ret > 0:
+        return jsonify([{'id': TaskID, 'todo': todo, 'urgent': urgent}])
+    return jsonify([{'id':'', 'todo':'', 'urgent':''}])
+
+@app.route('/API/tasklist/<id>', methods=['DELETE'])
+def APIdeleteTaskByID(id):
+    username = session.get('username', '')
+    if username == '':
+        username = 'default'
+        session['username']=username
+    ret = myDB.removeTask(id, username)
+    if ret > 0:
+        return jsonify([{'id': id, 'deleted':'true'}])
+    return jsonify([{'id':'', 'deleted':'false'}])
 
 
 if __name__ == '__main__':
