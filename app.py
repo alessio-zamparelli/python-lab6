@@ -79,16 +79,29 @@ def logout():
 
 # restAPI section
 
-@app.route('/API/tasklist')
+@app.route('/API/tasklist', methods=['GET'])
 def APItasklist():
     username = session.get('username', '')
     if username == '':
         username = 'default'
+        session['username']=username
     tasks = myDB.showTasks(username)
     if tasks == None:
         return render_template("loginerror.html")
     tasks = [{'id':task[0], 'todo':task[1], 'urgent':task[2]} for task in tasks]
     return jsonify(tasks)
+
+@app.route('/API/tasklist', methods=['POST'])
+def APIaddTask():
+    username = session.get('username', '')
+    if username == '':
+        username = 'default'
+        session['username']=username
+    newTask = request.json
+    ret = myDB.newTask(newTask['todo'], username)
+    return jsonify([{'todo':ret}])
+
+
 
 if __name__ == '__main__':
     app.run()
