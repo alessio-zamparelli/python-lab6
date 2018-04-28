@@ -1,5 +1,5 @@
-import pymysql as sql
 import configparser
+import pymysql as sql
 import sys
 
 config = configparser.ConfigParser()
@@ -88,7 +88,7 @@ def newTask(todo, username):
         return ""
 
 def updateTask(TaskID, todo, urgent):
-    if (todo != ""):
+    if todo != "":
         con = sql.connect(user=confUser, password=confPwd, database=confDB, host=confHost)
         cur = con.cursor()
         sql_query = "UPDATE task SET todo = %s, urgent = %s WHERE id = %s"
@@ -104,6 +104,7 @@ def updateTask(TaskID, todo, urgent):
 
 
 def removeTask(task_id, username):
+    """remove a task by givedID"""
     # msg = ' '.join(args)
     try:
         con = sql.connect(user=confUser, password=confPwd, database=confDB, host=confHost)

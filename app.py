@@ -1,6 +1,5 @@
-
-import db_operator as myDB
 from flask import Flask, redirect, url_for, render_template, session, request, jsonify
+import db_operator as myDB
 
 import logging
 
@@ -23,8 +22,7 @@ def index():
     username = session.get('username', '')
     if username != '':
         return redirect(url_for('taskList'))
-    else:
-        return render_template("index.html")
+    return render_template("index.html")
 
 @app.route('/tasklist', methods=['POST'])
 def taskList():
@@ -101,13 +99,13 @@ def APIaddTask():
     ret = myDB.newTask(newTask['todo'], username)
     return jsonify([{'todo':ret}])
 
-@app.route('/API/tasklist/<id>', methods=['GET'])
-def APIgetTaskContent(id):
+@app.route('/API/tasklist/<TaskID>', methods=['GET'])
+def APIgetTaskContent(TaskID):
     username = session.get('username', '')
     if username == '':
         username = 'default'
-        session['username']=username
-    task = myDB.getTaskContent(id)
+        session['username'] = username
+    task = myDB.getTaskContent(TaskID)
     if task=='':
         return jsonify([{'id':'', 'todo':'', 'urgent':''}])
     task = [{'id':task[0], 'todo':task[1], 'urgent':task[2]}]
